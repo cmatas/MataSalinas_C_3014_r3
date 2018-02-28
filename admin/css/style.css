@@ -1,15 +1,16 @@
 body {
   background: #F7F9F9; }
 
-.container h2 {
+h2 {
   font-weight: bold;
   color: #F0F3F4; }
-.container a {
+
+a {
   padding: 10px;
   background: #73C6B6;
   font-weight: bold;
   transition: 0.2s ease; }
-  .container a:hover {
+  a:hover {
     opacity: 0.5; }
 
 .formDiv {
@@ -47,12 +48,10 @@ body {
       background: #73C6B6;
       color: #F0F3F4; }
 
-.welcome {
-  margin: 30px;
-  text-align: center;
-  font-family: "Arial", "Helvetica", sans-serif;
-  font-weight: bold; }
-  .welcome img {
-    margin: 20px; }
+.hola {
+  margin-top: 20%;
+  background: red;
+  padding: 30px;
+  color: #F0F3F4; }
 
 /*# sourceMappingURL=style.css.map */

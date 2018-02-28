@@ -29,13 +29,13 @@ function criptpass() {
       unset($criptans, $criptmethod, $criptkey, $criptiv, $regs);
 
       return $decrans;
-      echo $decrans;
+      // echo $decrans;
     }
-
+// return $criptans;
 }
 
 
 // echo randompass();
 // echo " CHOCOLALA ";
-echo $decrans;
+echo criptpass();
 ?>
