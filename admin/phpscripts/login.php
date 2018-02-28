@@ -1,37 +1,17 @@
 <?php
   function logIn($username, $password, $ip) {
     require_once('connect.php');
-    $username = mysqli_real_escape_string($link, $username);
+    $username = mysqli_real_escape_string($link, $username); //sqli_real_escape_string stops sql inyections
     $password = mysqli_real_escape_string($link, $password);
-    $loginTQ = "SELECT * FROM tbl_user WHERE user_name='{$username}'";
-    $pass = "SELECT user_pass FROM tbl_user WHERE user_name='{$username}'";
-    $loginT = mysqli_query($link, $loginTQ);
-
-      if(preg_match("/^(.*)::(.*)$/", $pass, $regs)) {
-          // decrypt encrypted string
-          list(, $pass, $criptiv) = $regs;
-          $criptmethod = 'AES-128-CTR';
-          $criptkey = openssl_digest(gethostname() . "|" . $_SERVER['SERVER_ADDR'], 'SHA256', true);
-          $decrans = openssl_decrypt($pass, $criptmethod, $criptkey, 0, hex2bin($criptiv));
-
-    $loginstring = "SELECT * FROM tbl_user WHERE user_name='{$username}' AND user_pass = '{$decrans}'";
+    $loginstring = "SELECT * FROM tbl_user WHERE user_name='{$username}'";// AND user_pass='{$password}'";
     // echo $loginstring;
     $user_set = mysqli_query($link, $loginstring);
+    $usergel = "SELECT * FROM tbl_user WHERE user_name='{$username}'";
+    $userel = mysqli_query($link, $usergel);
     // echo mysqli_num_rows();
-
     if(mysqli_num_rows($user_set)){
-    //   $line = mysqli_fetch_array($user_set);
-    //   $pass = $line['user_pass'];
-    //   if(preg_match("/^(.*)::(.*)$/", $pass, $regs)) {
-    //       // decrypt encrypted string
-    //       list(, $pass, $criptiv) = $regs;
-    //       $criptmethod = 'AES-128-CTR';
-    //       $criptkey = openssl_digest(gethostname() . "|" . $_SERVER['SERVER_ADDR'], 'SHA256', true);
-    //       $decrans = openssl_decrypt($pass, $criptmethod, $criptkey, 0, hex2bin($criptiv));
-    //       unset($pass, $criptmethod, $criptkey, $criptiv, $regs);
-    //
-    //     if ($decrans = $password) {
-
+      $line = mysqli_fetch_array($user_set);
+      $pass = $line['user_pass'];
 
       $founduser = mysqli_fetch_array($user_set, MYSQLI_ASSOC);
       $id = $founduser['user_id'];
@@ -40,37 +20,65 @@
       $_SESSION['user_name'] = $founduser['user_fname'];
       $_SESSION['user_date'] = $founduser['user_date'];
       $_SESSION['user_attempts'] = $founduser['user_attempts'];
+      //
+
+      if(preg_match("/^(.*)::(.*)$/", $pass, $regs)) {
+          // decrypt encrypted string
+          list(, $pass, $criptiv) = $regs;
+          $criptmethod = 'AES-128-CTR';
+          $criptkey = openssl_digest(gethostname() . "|" . $_SERVER['SERVER_ADDR'], 'SHA256', true);
+          $decrans = openssl_decrypt($pass, $criptmethod, $criptkey, 0, hex2bin($criptiv));
+          // unset($pass, $criptmethod, $criptkey, $criptiv, $regs);
+
+          // return $decrans;
+          // echo $decrans;
+          if ($decrans == $password) {
+            $loginstring = "SELECT * FROM tbl_user WHERE user_name='{$username}'";// AND user_pass='{$password}'";
+            $user_set = mysqli_query($link, $loginstring);
+
+            $founduser = mysqli_fetch_array($user_set, MYSQLI_ASSOC);
+            $id = $founduser['user_id'];
+            // echo $id;
+            $_SESSION['user_id'] = $id;
+            $_SESSION['user_name'] = $founduser['user_fname'];
+            $_SESSION['user_date'] = $founduser['user_date'];
+            $_SESSION['user_attempts'] = $founduser['user_attempts'];
 
       if(mysqli_query($link, $loginstring)){
+
         $userat = $founduser['user_attempts'];
+        if ($userat < 3) {
+          $update = "UPDATE tbl_user SET user_ip='{$ip}' WHERE user_id={$id}";
+          $updatequery = mysqli_query($link, $update);
 
-        if($userat <= 3){
-        $update = "UPDATE tbl_user SET user_ip='{$ip}' WHERE user_id={$id}";
-        $updatequery = mysqli_query($link, $update);
+          $time = "UPDATE tbl_user SET user_date = CURRENT_TIMESTAMP WHERE user_id = {$id}";
+          $timeupdate = mysqli_query($link, $time);
 
-        $time = "UPDATE tbl_user SET user_date = CURRENT_TIMESTAMP WHERE user_id = {$id}";
-        $timeupdate = mysqli_query($link, $time);
-
-        $attemptsquery =  "UPDATE tbl_user SET user_attempts = '0' WHERE user_name = '{$username}'";
-        $attempts =  mysqli_query($link, $attemptsquery);
-        $_SESSION['user_attempts'] =0;
-      }} else {
-        redirect_to("admin_login.php");
+          $attemptsquery =  "UPDATE tbl_user SET user_attempts = '0' WHERE user_name = '{$username}'";
+          $attempts =  mysqli_query($link, $attemptsquery);
+          $_SESSION['user_attempts'] =0;
+          redirect_to("admin_index.php");
+        }
       }
-    }
-      redirect_to("admin_index.php");
-    }elseif($loginT){
-      $founduser = mysqli_fetch_array($loginT, MYSQLI_ASSOC);
+    }}
+    }elseif($user_set){
+      $founduser = mysqli_fetch_array($userel, MYSQLI_ASSOC);
       $_SESSION['user_name'] = $founduser['user_fname'];
-      // $_SESSION['user_attempts'] = $founduser['user_attempts'];
-      $_SESSION['user_attempts'] +=1;
-      $at = $_SESSION['user_attempts'];
-      // $attempts =  "UPDATE tbl_user SET user_attempts = '3' WHERE user_name = '{$username}'";
-      $attemptsquery =  "UPDATE tbl_user SET user_attempts = '{$at}' WHERE user_name = '{$username}'";
-      $attempts =  mysqli_query($link, $attemptsquery);
-      $message = "Learn how to type menz";
+      $_SESSION['user_attempts'] = $founduser['user_attempts'];
+      $_SESSION['user_attempts'] += 1;
+      $attempts =  $_SESSION['user_attempts'];
+
+      $attemptsquery = "update tbl_user set user_attempts='{$attempts}' where user_name = '{$username}'  ";
+      $attemptans = mysqli_query($link, $attemptsquery);
+      $message ="Please watch what you typing";
+      return $message;
+
+
+  }  else{
+      $message = "Its all wrong";
       return $message;
     }
+
     mysqli_close($link);
   }
  ?>
