@@ -44,11 +44,13 @@
             $_SESSION['user_date'] = $founduser['user_date'];
             $_SESSION['user_attempts'] = $founduser['user_attempts'];
             $_SESSION['user_log'] = $founduser['user_log'];
+            $_SESSION['user_newt'] = $founduser['user_newt'];
 
       if(mysqli_query($link, $loginstring)){
 
         $userlog = $founduser['user_log'];
         $userat = $founduser['user_attempts'];
+        $usernew = $founduser['user_newt'];
         if ($userat < 3) {
           $_SESSION['user_name'] = $founduser['user_fname'];
           $_SESSION['user_log'] = $founduser['user_log'];
@@ -68,10 +70,12 @@
           $attempts =  mysqli_query($link, $attemptsquery);
           $_SESSION['user_attempts'] =0;
           // redirect_to("admin_index.php");
-          if ($userlog < 1) {
+          if ($userlog < 1 && $usernew < ($usernew + 2) ) {
             redirect_to("admin_edituser.php");
+            echo ($usernew + 2);
           }else {
             redirect_to("admin_index.php");
+            echo ($usernew + 2);
           }
 
         }

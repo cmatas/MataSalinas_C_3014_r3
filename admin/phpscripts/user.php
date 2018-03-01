@@ -23,7 +23,7 @@ function criptpass() {
 function createUser($fname, $username, $email, $criptans, $lvlist) {
   include('connect.php');
 
-  $uperstring = "INSERT INTO tbl_user VALUES(NULL, '{$fname}', '{$username}', '{$criptans}', '{$email}', NULL, 'no', '0', '{$lvlist}', NULL)";
+  $uperstring = "INSERT INTO tbl_user VALUES(NULL, '{$fname}', '{$username}', '{$criptans}', '{$email}', NULL, 'no', '0', '{$lvlist}', NULL, CURRENT_TIMESTAMP)";
   // echo $uperstring;
   $userquery = mysqli_query($link, $uperstring);
   if($userquery) {

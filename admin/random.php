@@ -38,4 +38,8 @@ function criptpass() {
 // echo randompass();
 // echo " CHOCOLALA ";
 echo $decrans;
+
+include 'phpscripts/connect.php';
+echo (time() - $_SESSION['user_newt'] > 1800);
+
 ?>
