@@ -38,6 +38,7 @@ $passdcrypt = decriptU();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     $email = trim($_POST['email']);
+    // $recript = criptpassU();
     $result = edituser($id, $fname, $username, $password, $email);
       $message = $result;
     }
@@ -65,7 +66,7 @@ $passdcrypt = decriptU();
     <input type="text" name="password" value="<?php echo $passdcrypt; ?>">
     <label>Email: </label>
     <input type="text" name="email" value="<?php echo $info['user_email']; ?>">
-    <input type="submit" name="submit" value="Finish">
+    <input id="submit" type="submit" name="submit" value="Finish">
 
   </form>
 </div>

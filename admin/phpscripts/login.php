@@ -43,11 +43,21 @@
             $_SESSION['user_name'] = $founduser['user_fname'];
             $_SESSION['user_date'] = $founduser['user_date'];
             $_SESSION['user_attempts'] = $founduser['user_attempts'];
+            $_SESSION['user_log'] = $founduser['user_log'];
 
       if(mysqli_query($link, $loginstring)){
 
+        $userlog = $founduser['user_log'];
         $userat = $founduser['user_attempts'];
         if ($userat < 3) {
+          $_SESSION['user_name'] = $founduser['user_fname'];
+          $_SESSION['user_log'] = $founduser['user_log'];
+          $_SESSION['user_log'] += 1;
+          $log = $_SESSION['user_log'];
+
+          $logQ = "UPDATE tbl_user SET user_log = '{$log}' WHERE user_name = '{$username}'";
+          $logans = mysqli_query($link, $logQ);
+
           $update = "UPDATE tbl_user SET user_ip='{$ip}' WHERE user_id={$id}";
           $updatequery = mysqli_query($link, $update);
 
@@ -57,8 +67,15 @@
           $attemptsquery =  "UPDATE tbl_user SET user_attempts = '0' WHERE user_name = '{$username}'";
           $attempts =  mysqli_query($link, $attemptsquery);
           $_SESSION['user_attempts'] =0;
-          redirect_to("admin_index.php");
+          // redirect_to("admin_index.php");
+          if ($userlog < 1) {
+            redirect_to("admin_edituser.php");
+          }else {
+            redirect_to("admin_index.php");
+          }
+
         }
+
       }
     }}
     }elseif($user_set){
@@ -68,8 +85,8 @@
       $_SESSION['user_attempts'] += 1;
       $attempts =  $_SESSION['user_attempts'];
 
-      $attemptsquery = "update tbl_user set user_attempts='{$attempts}' where user_name = '{$username}'  ";
-      $attemptans = mysqli_query($link, $attemptsquery);
+      $attemptsQ = "UPDATE tbl_user SET user_attempts='{$attempts}' WHERE user_name = '{$username}'";
+      $attemptans = mysqli_query($link, $attemptsQ);
       $message ="Please watch what you typing";
       return $message;
 
