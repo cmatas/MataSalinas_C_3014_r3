@@ -39,7 +39,16 @@ function createUser($fname, $username, $email, $criptans, $lvlist) {
 function edituser($id, $fname, $username, $password, $email) {
   include('connect.php');
 
-  $updatestring = "UPDATE tbl_user SET user_fname = '{$fname}' AND user_pass = '{$password}' AND user_name = '{$username}' AND user_email = '{$email}' WHERE user_id={$id}";
+    $password;
+    $criptmethod = 'AES-128-CTR';
+    $criptkey = openssl_digest(gethostname() . "|" . $_SERVER['SERVER_ADDR'], 'SHA256', true);
+    $criptiv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($criptmethod));
+    $criptans = openssl_encrypt($password, $criptmethod, $criptkey, 0, $criptiv) . "::" . bin2hex($criptiv);
+
+    return $criptans;
+
+
+  $updatestring = "UPDATE tbl_user SET user_fname = '{$fname}' AND user_pass = '{$criptans}' AND user_name = '{$username}' AND user_email = '{$email}' WHERE user_id={$id}";
   // echo $updatestring;
   $updatequery = mysqli_query($link, $updatestring);
 
@@ -61,7 +70,7 @@ function deleteuser($id) {
     redirect_to("../admin_index.php");
 
   }else{
-    $message = "bye";
+    $message = "Bye";
     return $message;
   }
 

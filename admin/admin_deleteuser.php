@@ -12,16 +12,17 @@
  <meta charset="utf-8">
  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
  <link rel="stylesheet" href="css/style.css">
- <title>Delete user</title>
+ <title>Delete User</title>
  </head>
  <body>
    <div class="container">
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3 formDiv">
-     <h2>le death</h2>
+     <h2>Welcome to your death Portal</h2>
+     <p>Would you like to fire someone today?</p>
     <?php
       while($row = mysqli_fetch_array($users)) {
         echo "{$row['user_fname']}
-        <a href=\"phpscripts/caller.php?caller_id=delete&id={$row['user_id']}\"> has been Fired</a><br>";
+        <a href=\"phpscripts/caller.php?caller_id=delete&id={$row['user_id']}\"><br> Fired</a><br>";
       }
      ?>
     </div>
