@@ -70,9 +70,13 @@
           $attempts =  mysqli_query($link, $attemptsquery);
           $_SESSION['user_attempts'] =0;
           // redirect_to("admin_index.php");
-          if ($userlog < 1 && $usernew < ($usernew + 2) ) {
+          if ($userlog < 1 && time() - $usernew > 300 ) {
             redirect_to("admin_edituser.php");
-            echo ($usernew + 2);
+            // echo ($usernew + 2);
+          }elseif ($userlog < 1 && time() - $usernew < 300) {
+            redirect_to("admin_login.php");
+            $message ="Your password has expired";
+            return $message;
           }else {
             redirect_to("admin_index.php");
             echo ($usernew + 2);
